@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Algorithm Arena</title>
+  <meta name="description" content="Animated visualizations of famous sorting and pathfinding algorithms, with side-by-side races and empirical comparisons.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="22" height="22"><rect x="2" y="12" width="4" height="10" rx="1"/><rect x="8" y="6" width="4" height="16" rx="1"/><rect x="14" y="9" width="4" height="13" rx="1"/><rect x="20" y="2" width="2" height="20" rx="1"/></svg>
+      </span>
+      <h1>Algorithm Arena</h1>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button role="tab" class="tab active" data-tab="sorting" aria-selected="true">Sorting</button>
+      <button role="tab" class="tab" data-tab="race" aria-selected="false">Sorting Race</button>
+      <button role="tab" class="tab" data-tab="pathfinding" aria-selected="false">Pathfinding</button>
+      <button role="tab" class="tab" data-tab="compare" aria-selected="false">Compare</button>
+    </nav>
+    <button id="themeToggle" class="icon-btn" title="Toggle theme" aria-label="Toggle theme">
+      <svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"/></svg>
+    </button>
+  </header>
+
+  <main>
+    <!-- ============ SORTING ============ -->
+    <section id="tab-sorting" class="panel active" role="tabpanel">
+      <div class="controls">
+        <label>Algorithm
+          <select id="sortAlgo"></select>
+        </label>
+        <label>Input
+          <select id="sortInput" class="input-select"></select>
+        </label>
+        <label>Size <span class="val" id="sortSizeVal">60</span>
+          <input type="range" id="sortSize" min="10" max="300" value="60">
+        </label>
+        <label>Speed <span class="val" id="sortSpeedVal"></span>
+          <input type="range" id="sortSpeed" min="1" max="100" value="45">
+        </label>
+        <div class="btn-row">
+          <button id="sortShuffle" class="btn">New array</button>
+          <button id="sortStep" class="btn">Step</button>
+          <button id="sortPlay" class="btn primary">Play</button>
+        </div>
+      </div>
+
+      <div class="stage card">
+        <canvas id="sortCanvas"></canvas>
+        <div class="legend-inline">
+          <span><i class="sw sw-compare"></i>Comparing</span>
+          <span><i class="sw sw-swap"></i>Swap / write</span>
+          <span><i class="sw sw-sorted"></i>In final position</span>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card stats">
+          <div class="stat"><span class="stat-label">Comparisons</span><span class="stat-num" id="stCmp">0</span></div>
+          <div class="stat"><span class="stat-label">Swaps</span><span class="stat-num" id="stSwap">0</span></div>
+          <div class="stat"><span class="stat-label">Array writes</span><span class="stat-num" id="stWrite">0</span></div>
+          <div class="stat"><span class="stat-label">Total steps</span><span class="stat-num" id="stSteps">0</span></div>
+        </div>
+        <div class="card info" id="sortInfo"></div>
+      </div>
+    </section>
+
+    <!-- ============ RACE ============ -->
+    <section id="tab-race" class="panel" role="tabpanel">
+      <div class="controls">
+        <label>Input
+          <select id="raceInput" class="input-select"></select>
+        </label>
+        <label>Size <span class="val" id="raceSizeVal">80</span>
+          <input type="range" id="raceSize" min="10" max="250" value="80">
+        </label>
+        <label>Speed <span class="val" id="raceSpeedVal"></span>
+          <input type="range" id="raceSpeed" min="1" max="100" value="55">
+        </label>
+        <div class="btn-row">
+          <button id="raceShuffle" class="btn">New array</button>
+          <button id="racePlay" class="btn primary">Start race</button>
+        </div>
+      </div>
+      <p class="hint">Every algorithm gets the <b>same array</b> and the <b>same number of operations per frame</b> (one operation = one comparison or one swap/write), so the finish order shows who does the least work on this input.</p>
+      <div class="race-grid" id="raceGrid"></div>
+      <div class="card" id="raceResults" hidden>
+        <h3>Results</h3>
+        <div class="table-wrap"><table class="table" id="raceTable"></table></div>
+      </div>
+    </section>
+
+    <!-- ============ PATHFINDING ============ -->
+    <section id="tab-pathfinding" class="panel" role="tabpanel">
+      <div class="controls">
+        <label>Algorithm
+          <select id="pathAlgo"></select>
+        </label>
+        <label>Brush
+          <select id="pathBrush">
+            <option value="1">Wall</option>
+            <option value="2">Weight (cost 5)</option>
+            <option value="0">Eraser</option>
+          </select>
+        </label>
+        <label>Speed <span class="val" id="pathSpeedVal"></span>
+          <input type="range" id="pathSpeed" min="1" max="100" value="55">
+        </label>
+        <div class="btn-row">
+          <button id="pathMaze" class="btn">Maze</button>
+          <button id="pathRandom" class="btn">Random walls</button>
+          <button id="pathWeights" class="btn">Random weights</button>
+          <button id="pathClear" class="btn">Clear</button>
+          <button id="pathPlay" class="btn primary">Visualize</button>
+          <button id="pathRace" class="btn accent">Race all</button>
+        </div>
+      </div>
+      <p class="hint">Draw walls by dragging on the grid. Drag the <b class="txt-start">start</b> and <b class="txt-end">target</b> nodes to move them. After a run, moving them updates the result instantly.</p>
+
+      <div class="stage card" id="pathStage">
+        <canvas id="pathCanvas"></canvas>
+        <div class="legend-inline">
+          <span><i class="sw sw-start"></i>Start</span>
+          <span><i class="sw sw-end"></i>Target</span>
+          <span><i class="sw sw-wall"></i>Wall</span>
+          <span><i class="sw sw-weight"></i>Weight</span>
+          <span><i class="sw sw-frontier"></i>Frontier</span>
+          <span><i class="sw sw-visited"></i>Visited</span>
+          <span><i class="sw sw-path"></i>Path</span>
+        </div>
+      </div>
+      <div class="race-grid path-race" id="pathRaceGrid" hidden></div>
+
+      <div class="grid-2" id="pathSingleInfo">
+        <div class="card stats">
+          <div class="stat"><span class="stat-label">Nodes visited</span><span class="stat-num" id="pVisited">0</span></div>
+          <div class="stat"><span class="stat-label">Path length</span><span class="stat-num" id="pLen">–</span></div>
+          <div class="stat"><span class="stat-label">Path cost</span><span class="stat-num" id="pCost">–</span></div>
+          <div class="stat"><span class="stat-label">Optimal?</span><span class="stat-num" id="pOpt">–</span></div>
+        </div>
+        <div class="card info" id="pathInfo"></div>
+      </div>
+      <div class="card" id="pathResults" hidden>
+        <h3>Race results on this grid</h3>
+        <div class="table-wrap"><table class="table" id="pathTable"></table></div>
+      </div>
+    </section>
+
+    <!-- ============ COMPARE ============ -->
+    <section id="tab-compare" class="panel" role="tabpanel">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h3>How the work grows with input size</h3>
+            <p class="sub">Measured, not theoretical: each algorithm actually runs on arrays of growing size and we count comparisons + swaps/writes.</p>
+          </div>
+          <div class="controls compact">
+            <label>Input
+              <select id="chartInput" class="input-select"></select>
+            </label>
+            <label>Scale
+              <select id="chartScale">
+                <option value="lin">Linear</option>
+                <option value="log">Logarithmic</option>
+              </select>
+            </label>
+            <button class="btn" id="chartTableToggle">Show table</button>
+          </div>
+        </div>
+        <div class="chart-legend" id="chartLegend"></div>
+        <div class="chart-wrap" id="chartWrap">
+          <canvas id="chartCanvas"></canvas>
+          <div class="tooltip" id="chartTip" hidden></div>
+        </div>
+        <div class="table-wrap" id="chartTableWrap" hidden><table class="table" id="chartTable"></table></div>
+      </div>
+
+      <div class="card">
+        <h3>Sorting algorithms at a glance</h3>
+        <div class="table-wrap"><table class="table" id="sortComplexity"></table></div>
+      </div>
+      <div class="card">
+        <h3>Pathfinding algorithms at a glance</h3>
+        <div class="table-wrap"><table class="table" id="pathComplexity"></table></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    Built with vanilla JS &amp; canvas · <a href="https://github.com/" id="repoLink">Source on GitHub</a>
+  </footer>
+
+  <script src="js/common.js"></script>
+  <script src="js/sorting.js"></script>
+  <script src="js/pathfinding.js"></script>
+  <script src="js/compare.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
